@@ -24,14 +24,6 @@ local function create_padding(offset, dir)
   return vim.api.nvim_get_current_win()
 end
 
--- Reinitialize the padding buffers
-local function check()
-  if active and vim.fn.tabpagenr("$") == 1 then
-    M.toggle()
-    M.toggle()
-  end
-end
-
 -- Toggle mindful mode
 function M.toggle()
   local width = 120
@@ -47,11 +39,6 @@ function M.toggle()
 
   -- Calculate padding
   local offset = math.floor((vim.o.columns - width) / 2)
-
-  if offset <= 0 then
-    vim.notify("Not enough space to center the main window", vim.log.levels.WARN)
-    return
-  end
 
   -- Enter mindful mode
   if vim.fn.exists("winnr") == 1 then
@@ -70,12 +57,6 @@ end
 
 function M.setup()
   vim.api.nvim_create_user_command("Mindful", M.toggle, { desc = "Toggle mindful mode" })
-
-  vim.api.nvim_create_autocmd("WinClosed", {
-    callback = function()
-      vim.defer_fn(check, 100) -- Slight delay to allow state to stabilize
-    end,
-  })
 end
 
 return M
